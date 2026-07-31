@@ -261,3 +261,9 @@ func hasAWSErrorCode(err error, code string) bool {
 	}
 	return false
 }
+
+// NewTestAWSError creates a test AWS error with the given code and message.
+// This helper allows test code to create AWS errors without importing smithy-go directly.
+func NewTestAWSError(code, message string) error {
+	return &smithy.GenericAPIError{Code: code, Message: message}
+}

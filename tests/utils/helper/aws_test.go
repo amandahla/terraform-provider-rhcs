@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/aws/smithy-go"
 )
 
 type fakeEC2SecurityGroupClient struct {
@@ -188,7 +187,7 @@ func TestDeleteExtraSecurityGroupsRetriesDependencyViolationAndSucceeds(t *testi
 		},
 		deleteErrorsByGroup: map[string][]error{
 			groupID: {
-				&smithy.GenericAPIError{Code: "DependencyViolation", Message: "still referenced"},
+				NewTestAWSError("DependencyViolation", "still referenced"),
 				nil,
 			},
 		},
