@@ -46,6 +46,7 @@ WHEN your change matches one of these, open **only** that doc first (then any fa
 - WHEN changing schema / validators / plan modifiers → [`resource-schema.md`](resource-schema.md) (+ [`resource-model.md`](resource-model.md); create/read/update that use those fields; [`security.md`](../security.md) if secrets/Sensitive)
 - WHEN changing model / state structs → [`resource-model.md`](resource-model.md) (+ schema if shape drifted; CRUD that maps fields)
 - WHEN changing Create only → [`resource-create.md`](resource-create.md) (+ [`errors.md`](../errors.md) if changing failure handling)
+- WHEN Create adopts an existing object instead of creating it (magic import) → [`resource-create.md`](resource-create.md) (+ [`resource-read.md`](resource-read.md), [`resource-model.md`](resource-model.md), and [`testing.md`](../testing.md))
 - WHEN changing Read / refresh only → [`resource-read.md`](resource-read.md) (+ [`errors.md`](../errors.md) if changing failure handling)
 - WHEN changing Update only → [`resource-update.md`](resource-update.md) (+ [`errors.md`](../errors.md) if changing failure handling)
 - WHEN changing Delete only → [`resource-delete.md`](resource-delete.md) (+ [`errors.md`](../errors.md) if changing failure handling)

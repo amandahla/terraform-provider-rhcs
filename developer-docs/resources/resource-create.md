@@ -4,6 +4,7 @@ Router: [`resource-overview.md`](resource-overview.md). Model and collection nul
 
 WHEN your situation matches one of these, open **only** that section:
 - WHEN implementing Create or mapping plan → API create → state → [Create method](#create-method)
+- WHEN Create adopts an object that the product created automatically → [Create-time adoption (magic import)](#create-time-adoption-magic-import)
 - WHEN this resource’s Create must wait until a parent cluster is ready → [Wait for parent cluster](#wait-for-parent-cluster)
 - WHEN adding or changing a Day 2 capability (where it lives: cluster attribute versus its own resource) → [Day 2 capabilities](#day-2-capabilities)
 - DEFAULT: WHEN adding or changing create behavior, open [Create method](#create-method) first, then any matching WHEN above.
@@ -19,6 +20,17 @@ WHEN implementing Create:
 - MUST: When adding in-method validation (cross-field rules, region matching, mutual exclusion) to Create, also add the same check to Update for any attribute that can change after creation — schema-level validators run automatically, but in-method checks do not. See [`resource-update.md`](resource-update.md).
 - DEFAULT: WHEN editing an existing package, match that package. For new types, follow HashiCorp Create (https://developer.hashicorp.com/terraform/plugin/framework/resources/create) where it does not conflict with this repo’s rules.
 - EXAMPLE: `provider/imagemirror` Create (plan get → validate cluster ready/HCP → API add → set id/timestamps → `State.Set`). Prefer a package closest to your feature.
+
+## Create-time adoption (magic import)
+
+**Magic import** means Create recognizes an object that the product created automatically and adopts it into Terraform state without requiring a separate `terraform import` command.
+
+WHEN implementing or changing magic import:
+- MUST: Treat it as a distinct state-entry path, not as ordinary Create or explicit import. Initialize synthetic state from every known or null plan value before Read refreshes it.
+- MUST: Audit configurable values the API may omit, especially `false`, empty collections, and fields inside nested objects. Preserve their planned Terraform representation according to [`resource-model.md`](resource-model.md); Read cannot reconstruct information the API does not return.
+- MUST: Exercise this path independently from explicit import according to [`testing.md`](../testing.md).
+- DEFAULT: Use magic import only when adopting an automatically created durable object is established behavior for that resource. Handle ordinary duplicate objects through the package’s existing error/import guidance.
+- EXAMPLE: Classic and HCP machine pools adopt the default worker pool in `Create`; their initial-state adjustment must carry plan values that OCM may omit.
 
 ## Wait for parent cluster
 

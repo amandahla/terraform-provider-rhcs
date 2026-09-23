@@ -20,5 +20,7 @@ WHEN implementing or changing the resource model:
 WHEN writing List, Set, or Map attributes into the model/state (including populate helpers used by Create/Read/Update):
 - MUST: Set an explicit Framework value — a populated collection or a typed null (e.g. `types.ListNull(types.StringType)`) — never leave the field as Go `nil`.
 - MUST: When the API omits or clears a value, assign the matching typed null (or the empty value that matches the attribute contract) so refresh does not keep stale data.
+- WHEN the API collapses distinct Terraform values (for example, it omits both null and an explicitly empty collection): MUST define whether state preserves the prior known Terraform value or uses one canonical representation. Apply that rule across Create, Read, Update, explicit import, and any Create-time adoption path so each path produces a stable subsequent plan.
+- DEFAULT: Preserve a prior known value when the API omission cannot distinguish it from another semantically equivalent value. When no prior value exists, such as during explicit import, initialize the canonical typed value required by the attribute contract.
 - EXAMPLE: HCP cluster `log_forwarder_ids` initialized with `types.ListNull` when none are configured (`provider/clusterrosa/hcp`).
 - NOTE: Nested-object rules when Required children are missing from the API, and map clear-on-shrink, live in Create/Read/Update — see those step docs and pointers from [`resource-schema.md`](resource-schema.md).

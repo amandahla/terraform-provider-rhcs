@@ -7,6 +7,7 @@ Rules for **when** to add which test layer. Shared by resources and data sources
 WHEN your situation matches one of these, open **only** that section:
 - WHEN choosing which test layer applies → [Layers](#layers)
 - WHEN adding or changing tests for a type or behavior → [When to add tests](#when-to-add-tests)
+- WHEN a resource supports explicit import or Create-time adoption → [Import and adoption](#import-and-adoption)
 - WHEN registering a new `rhcs_*` type → [Subsystem registry](#subsystem-registry)
 - DEFAULT: Open [When to add tests](#when-to-add-tests) for behavior changes; [Subsystem registry](#subsystem-registry) for new types.
 
@@ -38,6 +39,15 @@ WHEN changing profile fields or skip conditions (e.g. `IsAdminEnabled()`):
 
 WHEN the change touches `tests/utils/exec` or tf-manifests:
 - MUST NOT: Treat subsystem coverage alone as sufficient — review e2e harness wiring.
+
+## Import and adoption
+
+WHEN adding or changing explicit import or Create-time adoption (magic import):
+- MUST: Cover each supported state-entry path independently; successful explicit import does not cover magic import, and successful magic import does not cover explicit import.
+- MUST: Assert the exact state representation of configurable values the API omits, including null versus empty collections and false versus null when applicable.
+- MUST: Verify a subsequent plan against representative configuration has no unintended diff. Import command success alone is insufficient.
+- WHEN magic import starts from a resource plan: MUST include explicitly configured empty or zero values in the test and omit them from the mocked API response, proving the initial-state adjustment preserves them.
+- WHEN Classic and HCP share the behavior: MUST cover both unless divergence is intentional and documented.
 
 ## Subsystem registry
 

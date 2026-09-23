@@ -64,6 +64,11 @@ WHEN a nested optional+computed child may stay null in config while the API retu
 - MUST: Prefer `UseNonNullStateForUnknown()` (framework ≥1.17).
 - EXAMPLE: `provider/registry_config` (`platform_allowlist_id`).
 
+WHEN an Optional List, Set, or Map is semantically unchanged whether null or empty and the API omits both forms:
+- MUST: Define the state representation according to [`resource-model.md`](resource-model.md) and verify it across normal Create/Read, explicit import, and any magic-import path.
+- WHEN preserving explicit empty configuration but imported state uses a canonical value: MUST use consistent plan semantics that prevent null-versus-empty permadiffs. Search `provider/common/planmodifiers` before adding a custom modifier.
+- MUST: Ensure a custom equivalence modifier does not discard a configured value during initial Create merely because the prior state is null.
+
 WHEN writing attribute plan modifiers under list/set nested attributes or blocks:
 - MUST NOT: Assume prior-state elements stay aligned by index after reorder/remove.
 

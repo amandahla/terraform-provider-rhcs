@@ -11,12 +11,15 @@ WHEN your situation matches one of these, open **only** that section:
 ## Import method
 
 WHEN implementing ImportState:
-- MUST: Keep ImportState thin — parse the import id, set the identity attributes needed for Read, and let Read populate the rest (see [`resource-read.md`](resource-read.md)).
+- DEFAULT: Keep ImportState thin — parse the import id, set the identity attributes needed for Read, and let Read populate values the API returns (see [`resource-read.md`](resource-read.md)).
+- WHEN the API omits a configurable value and Read therefore cannot reconstruct a stable state: MUST initialize the minimal canonical typed value in ImportState according to [`resource-model.md`](resource-model.md). Align its schema/plan semantics so both omitted and explicitly empty configuration produce stable subsequent plans.
 - MUST: Validate the import id format and add an **error** diagnostic on invalid format (then return) — see [`errors.md`](../errors.md) for lookup failures in Read.
 - MUST: Document the import identifier format for practitioners (resource docs / examples) when import is supported — see [`docs-and-examples.md`](../docs-and-examples.md).
 - DEFAULT: For new types, follow HashiCorp Import (https://developer.hashicorp.com/terraform/plugin/framework/resources/import) where it does not conflict with this repo’s rules. When editing an existing package, match that package (including delimiter and attribute names).
 - EXAMPLE: `provider/imagemirror` ImportState — `cluster_id:image_mirror_id` → `SetAttribute` on `cluster_id` and `id`.
 - EXAMPLE (passthrough id): `provider/defaultingress` — `ImportStatePassthroughID` into `cluster`.
+
+NOTE: Create-time adoption (magic import) is a separate state-entry path because it has the resource plan available. Follow [`resource-create.md`](resource-create.md#create-time-adoption-magic-import) for that path.
 
 NOTE: Design the import identifier so practitioners can form it from values they already have (OCM/API id, cluster id, CLI). Prefer stable remote ids over ephemeral or display-only names.
 
